@@ -1,5 +1,7 @@
 <template>
     <div>{{message}}</div>
+
+    <span :title="message">blablabla</span>
 </template>
 
 <script>
