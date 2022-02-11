@@ -1,68 +1,67 @@
 <template>
-    <div class="tab">
-        <button
-            v-for="tab in tabs"
-            :key="tab"
-            :class="['tab-button', { active: currentTab === tab }]"
-            @click="currentTab = tab">
-        {{ tab }}</button>
+    <div class="container" style="margin-top: 20px">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">SIMPLE TODO APP</h5>
+                <div class="row">
+                    <div class="col-10">
+                        <input v-model="todo" type="text" class="form-control" @keyup.enter="add"/>
+                    </div>
+                    <div class="col-2">
+                        <button class="btn btn-success" @click="add">ADD</button>
+                    </div>
+                </div>
+                <List 
+                    :todos="todos" 
+                    @deleteTodo="deleteTodo" 
+                    @doneTodo="doneTodo" 
+                />
+                <br />
+                <small>Total TODO : {{ totalTODO }}</small>
+            </div>
+        </div>
     </div>
-
-    <keep-alive>
-        <component :is="currentTabComponent" />
-    </keep-alive>
 </template>
 
 <script>
-import Home from './components/Home.vue';
-import Post from './components/Post.vue';
-import About from './components/About.vue';
+import List from "./components/List.vue";
 
 export default {
-    components: { Home, Post, About },
+    components: { List },
     data() {
         return {
-            currentTab: "Home",
-            tabs: [ "Home", "Post", "About"]
-        }
+            todo: "",
+            todos: [],
+        };
     },
     computed: {
-        currentTabComponent() {
-            return this.currentTab.toLowerCase();
+        totalTODO() {
+            return this.todos.length;
+        }
+    },
+    methods: {
+        add() {
+            this.todos.unshift({
+                activity: this.todo,
+                isDone: false
+            });
+            this.todo = "";
+        },
+        deleteTodo(todoIndex) {
+            this.todos = this.todos.filter((item, index) => {
+                if (index != todoIndex) {
+                    return item;
+                }
+            });
+        },
+        doneTodo(todoIndex) {
+            this.todos = this.todos.filter((item, index) => {
+                if (index == todoIndex) {
+                    item.isDone = true;
+                }
+                return item;
+            });
         }
     }
 };
 </script>
-
-<style>
-.tab {
-    font-family: sans-serif;
-    border: 1px solid #eee;
-    border-radius: 2px;
-    padding: 20px 30px;
-    margin-top: 1em;
-    margin-bottom: 48px;
-    user-select: none;
-    overflow-x: auto;
-}
-.tab-button {
-    padding: 8px 10px;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-    border: 1px solid #ccc;
-    cursor: pointer;
-    background: #f0f0f0;
-    margin-bottom: -1px;
-    margin-right: -1px;
-}
-.tab-button:hover {
-    background: #e0e0e0;
-}
-.tab-button.active {
-    background: #e0e0e0;
-}
-.demo-tab {
-    border: 1px solid #ccc;
-    padding: 10px;
-}
-</style>
