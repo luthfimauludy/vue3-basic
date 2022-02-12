@@ -5,7 +5,7 @@
                 <h5 class="card-title">SIMPLE TODO APP</h5>
                 <div class="row">
                     <div class="col-10">
-                        <input v-model="todo" type="text" class="form-control" @keyup.enter="add"/>
+                        <input v-model="todo" type="text" class="form-control" placeholder="Ketik disini" @keyup.enter="add"/>
                     </div>
                     <div class="col-2">
                         <button class="btn btn-success" @click="add">ADD</button>
@@ -34,6 +34,9 @@ export default {
             todos: [],
         };
     },
+    mounted() {
+        this.todos = JSON.parse(localStorage.getItem('todos'));
+    },
     computed: {
         totalTODO() {
             return this.todos.length;
@@ -46,6 +49,7 @@ export default {
                 isDone: false
             });
             this.todo = "";
+            this.saveToLocalStorage();
         },
         deleteTodo(todoIndex) {
             this.todos = this.todos.filter((item, index) => {
@@ -53,6 +57,7 @@ export default {
                     return item;
                 }
             });
+            this.saveToLocalStorage();
         },
         doneTodo(todoIndex) {
             this.todos = this.todos.filter((item, index) => {
@@ -61,6 +66,10 @@ export default {
                 }
                 return item;
             });
+            this.saveToLocalStorage();
+        },
+        saveToLocalStorage() {
+            localStorage.setItem('todos', JSON.stringify(this.todos));
         }
     }
 };
