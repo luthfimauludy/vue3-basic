@@ -6,6 +6,7 @@
                 <div class="row">
                     <div class="col-10">
                         <input v-model="todo" type="text" class="form-control" placeholder="Ketik disini" @keyup.enter="add"/>
+                        <div class="error" v-if="error"><small>{{ error }}</small></div>
                     </div>
                     <div class="col-2">
                         <button class="btn btn-success" @click="add">ADD</button>
@@ -32,6 +33,7 @@ export default {
         return {
             todo: "",
             todos: [],
+            error: ''
         };
     },
     mounted() {
@@ -44,6 +46,10 @@ export default {
     },
     methods: {
         add() {
+            if (this.todo === '') {
+                this.error = 'Data tidak boleh kosong!';
+                return false;
+            }
             this.todos.unshift({
                 activity: this.todo,
                 isDone: false
