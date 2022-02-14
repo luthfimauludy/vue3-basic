@@ -1,7 +1,7 @@
 <template>
     <div style="margin-top: 20px">
         <ul class="list-group">
-            <li v-for="(todo, index) in todos" :key="todo" class="list-group-item">
+            <li v-for="(todo, index) in todos" :key="index" class="list-group-item">
                 <div class="row">
                     <div class="col">
                         <span v-if="todo.isDone">
@@ -12,7 +12,8 @@
                     <div class="col-auto">
                         <div class="row gx-2">
                             <div class="col">
-                                <button @click="done(index)" class="btn btn-info">Done</button>
+                                <button class="btn btn-info" v-if="!todo.isDone" @click="done(index)">Done</button>
+                                <button class="btn btn-info" v-else @click="unDone(index)">Undone</button>
                             </div>
                             <div class="col">
                                 <button @click="deleteTODO(index)" class="btn btn-danger">X</button>
@@ -38,7 +39,10 @@ export default {
             this.$emit('deleteTodo', index);
         },
         done(index) {
-            this.$emit('doneTodo', index);
+            this.$emit('doneTodo', [index, true]);
+        },
+        unDone(index) {
+            this.$emit('doneTodo', [index, false]);
         }
     }
 };

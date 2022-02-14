@@ -5,10 +5,10 @@
                 <h5 class="card-title">SIMPLE TODO APP</h5>
                 <div class="row">
                     <div class="col-10">
-                        <input type="text" autofocus class="form-control" v-model="todo" placeholder="Ketik disini" @keyup.enter="add"/>
+                        <input type="text" class="form-control" v-model="todo" placeholder="Ketik disini" @keyup.enter="add"/>
                     </div>
                     <div class="col-2">
-                        <button class="btn btn-success" @submit.prevent="add">ADD</button>
+                        <button class="btn btn-success" @click="add">ADD</button>
                     </div>
                 </div>
                 <List 
@@ -31,14 +31,14 @@ export default {
     data() {
         return {
             todo: "",
-            todos: [ ]
+            todos: []
         };
     },
     beforeMount() {
         if (localStorage.getItem("TODOS")) {
             this.todos = JSON.parse(localStorage.getItem("TODOS"));
         } else {
-            localStorage.setItem("TODOS", "[ ]");
+            localStorage.setItem("TODOS", "[]");
         }
     },
     updated() {
@@ -55,11 +55,11 @@ export default {
             });
             this.todo = "";
         },
-        deleteTodo(i) {
-            this.todos.splice(i, 1);
+        deleteTodo(todoIndex) {
+            this.todos.splice(todoIndex, 1);
         },
-        doneTodo([i, v]) {
-            this.todos[i].isDone = v;
+        doneTodo([todoIndex, v]) {
+            this.todos[todoIndex].isDone = v;
             localStorage.setItem("TODOS", JSON.stringify(this.todos));
         }
     }
