@@ -5,11 +5,10 @@
                 <h5 class="card-title">SIMPLE TODO APP</h5>
                 <div class="row">
                     <div class="col-10">
-                        <input v-model="todo" type="text" class="form-control" placeholder="Ketik disini" @keyup.enter="add"/>
-                        <div class="error" v-if="error"><small>{{ error }}</small></div>
+                        <input type="text" autofocus class="form-control" v-model="todo" placeholder="Ketik disini" @keyup.enter="add"/>
                     </div>
                     <div class="col-2">
-                        <button class="btn btn-success" @click="add">ADD</button>
+                        <button class="btn btn-success" @submit.prevent="add">ADD</button>
                     </div>
                 </div>
                 <List 
@@ -18,7 +17,7 @@
                     @doneTodo="doneTodo" 
                 />
                 <br />
-                <small>Total TODO : {{ totalTODO }}</small>
+                <small>Total TODO : {{ todos.length }}</small>
             </div>
         </div>
     </div>
@@ -32,22 +31,22 @@ export default {
     data() {
         return {
             todo: "",
-            todos: [],
-            error: ''
+            todos: [ ]
         };
     },
-    mounted() {
-        this.todos = JSON.parse(localStorage.getItem('todos'));
-    },
-    computed: {
-        totalTODO() {
-            return this.todos.length;
+    beforeMount() {
+        if (localStorage.getItem("TODOS")) {
+            this.todos = JSON.parse(localStorage.getItem("TODOS"));
+        } else {
+            localStorage.setItem("TODOS", "[ ]");
         }
+    },
+    updated() {
+        localStorage.setItem("TODOS", JSON.stringify(this.todos));
     },
     methods: {
         add() {
             if (this.todo === '') {
-                this.error = 'Data tidak boleh kosong!';
                 return false;
             }
             this.todos.unshift({
@@ -55,27 +54,13 @@ export default {
                 isDone: false
             });
             this.todo = "";
-            this.saveToLocalStorage();
         },
-        deleteTodo(todoIndex) {
-            this.todos = this.todos.filter((item, index) => {
-                if (index != todoIndex) {
-                    return item;
-                }
-            });
-            this.saveToLocalStorage();
+        deleteTodo(i) {
+            this.todos.splice(i, 1);
         },
-        doneTodo(todoIndex) {
-            this.todos = this.todos.filter((item, index) => {
-                if (index == todoIndex) {
-                    item.isDone = true;
-                }
-                return item;
-            });
-            this.saveToLocalStorage();
-        },
-        saveToLocalStorage() {
-            localStorage.setItem('todos', JSON.stringify(this.todos));
+        doneTodo([i, v]) {
+            this.todos[i].isDone = v;
+            localStorage.setItem("TODOS", JSON.stringify(this.todos));
         }
     }
 };

@@ -30,7 +30,7 @@ export default {
     props: {
         todos: {
             type: Array,
-            default: [],
+            default: [ ],
         }
     },
     methods: {
