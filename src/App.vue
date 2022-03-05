@@ -3,19 +3,21 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">SIMPLE TODOLIST</h5>
-                <div class="row">
-                    <div class="col-10">
-                        <input type="text" class="form-control" v-model="todo" placeholder="Ketik disini" @keyup.enter="add"/>
-                        <div v-if="errors" class="error-messages">
-                            <div v-for="(error, index) in errors" :key="index">
-                                <small>{{ error }}</small>
+                <form @submit.prevent="add()">
+                    <div class="row">
+                        <div class="col-10">
+                            <input type="text" class="form-control" v-model="todo" placeholder="Please type here" />
+                            <div v-if="errors" class="error-messages">
+                                <div v-for="(error, index) in errors" :key="index">
+                                    <small>{{ error }}</small>
+                                </div>
                             </div>
                         </div>
+                        <div class="col-2">
+                            <button type="submit" class="btn btn-success">ADD</button>
+                        </div>
                     </div>
-                    <div class="col-2">
-                        <button class="btn btn-success" @click="add">ADD</button>
-                    </div>
-                </div>
+                </form>
                 <List 
                     :todos="todos" 
                     @deleteTodo="deleteTodo" 
@@ -55,7 +57,7 @@ export default {
             this.errors = [];
 
             if (!this.todo) {
-                this.errors.push("Data tidak boleh kosong!");
+                this.errors.push("Field is required!");
                 return false;
             }
 
