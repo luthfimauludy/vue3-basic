@@ -7,8 +7,8 @@
                     <div class="row">
                         <div class="col-10">
                             <input type="text" class="form-control" v-model="todo" placeholder="Please type here" />
-                            <div v-if="errors" class="error-messages">
-                                <div v-for="(error, index) in errors" :key="index">
+                            <div v-if="errors.err" class="error-messages">
+                                <div v-for="(error, index) in errors.err" :key="index">
                                     <small>{{ error }}</small>
                                 </div>
                             </div>
@@ -19,61 +19,69 @@
                     </div>
                 </form>
                 <List 
-                    :todos="todos" 
+                    :todos="todos.list" 
                     @deleteTodo="deleteTodo" 
                     @doneTodo="doneTodo" 
                 />
                 <br />
-                <small>Total TODO : {{ todos.length }}</small>
+                <small>Total TODO : {{ todos.list.length }}</small>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import { ref, reactive } from "vue";
 import List from "./components/List.vue";
 
 export default {
     components: { List },
-    data() {
-        return {
-            todo: "",
-            todos: [],
-            errors: []
-        };
-    },
-    beforeMount() {
-        if (localStorage.getItem("TODOS")) {
-            this.todos = JSON.parse(localStorage.getItem("TODOS"));
-        } else {
-            localStorage.setItem("TODOS", "[]");
-        }
-    },
-    updated() {
-        localStorage.setItem("TODOS", JSON.stringify(this.todos));
-    },
-    methods: {
-        add() {
-            this.errors = [];
+    setup() {
+        const todo = ref("");
+        const todos = reactive({
+            list: []
+        });
+        const errors = reactive({
+            err: []
+        });
 
-            if (!this.todo) {
-                this.errors.push("Field is required!");
+        // beforeMount(() => {
+        //     if (localStorage.getItem("TODOS")) {
+        //         todos.list = JSON.parse(localStorage.getItem("TODOS"));
+        //     } else {
+        //         localStorage.setItem("TODOS", "[]");
+        //     }
+        // });
+            
+        // updated(() => {
+        //     localStorage.setItem("TODOS", JSON.stringify(todos.list));
+        // });
+
+        const add = () => {
+            errors.err = [];
+
+            if (!todo.value) {
+                errors.err.push("Field is required!");
                 return false;
-            }
+            };
 
-            this.todos.unshift({
-                activity: this.todo,
+            todos.list.unshift({
+                activity: todo.value,
                 isDone: false
             });
-            this.todo = "";
-        },
-        deleteTodo(todoIndex) {
-            this.todos.splice(todoIndex, 1);
-        },
-        doneTodo([todoIndex, v]) {
-            this.todos[todoIndex].isDone = v;
-            localStorage.setItem("TODOS", JSON.stringify(this.todos));
-        }
-    }
+            todo.value = "";
+        };
+
+        const deleteTodo = (todoIndex) => {
+            todos.list.splice(todoIndex, 1);
+        };
+
+        const doneTodo = ([todoIndex, v]) => {
+            todos.list[todoIndex].isDone = v;
+            localStorage.setItem("TODOS", JSON.stringify(todos.list));
+        };
+
+        return { todo, todos, errors, add, deleteTodo, doneTodo };
+    },
 };
 </script>
