@@ -19,19 +19,19 @@
                     </div>
                 </form>
                 <List 
-                    :todos="todos.list" 
+                    :todos="list" 
                     @deleteTodo="deleteTodo" 
                     @doneTodo="doneTodo" 
                 />
                 <br />
-                <small>Total TODO : {{ todos.list.length }}</small>
+                <small>Total TODO : {{ totalTODO }}</small>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted, computed, toRefs } from "vue";
 import List from "./components/List.vue";
 
 export default {
@@ -45,17 +45,14 @@ export default {
             err: []
         });
 
-        // beforeMount(() => {
-        //     if (localStorage.getItem("TODOS")) {
-        //         todos.list = JSON.parse(localStorage.getItem("TODOS"));
-        //     } else {
-        //         localStorage.setItem("TODOS", "[]");
-        //     }
-        // });
-            
-        // updated(() => {
-        //     localStorage.setItem("TODOS", JSON.stringify(todos.list));
-        // });
+        onMounted(() => {
+            const items = localStorage.getItem("todos");
+            todos.list = items ? JSON.parse(items) : [];
+        });
+
+        const totalTODO = computed(() => {
+            return todos.list.length;
+        });
 
         const add = () => {
             errors.err = [];
@@ -70,18 +67,24 @@ export default {
                 isDone: false
             });
             todo.value = "";
+            saveToLocalStorage();
         };
 
         const deleteTodo = (todoIndex) => {
             todos.list.splice(todoIndex, 1);
+            saveToLocalStorage();
         };
 
         const doneTodo = ([todoIndex, v]) => {
             todos.list[todoIndex].isDone = v;
-            localStorage.setItem("TODOS", JSON.stringify(todos.list));
+            saveToLocalStorage();
         };
 
-        return { todo, todos, errors, add, deleteTodo, doneTodo };
+        const saveToLocalStorage = () => {
+            localStorage.setItem("todos", JSON.stringify(todos.list));
+        };
+
+        return { todo, ...toRefs(todos), errors, totalTODO, add, deleteTodo, doneTodo };
     },
 };
 </script>

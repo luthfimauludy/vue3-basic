@@ -34,16 +34,20 @@ export default {
             default: [ ],
         }
     },
-    methods: {
-        deleteTODO(index) {
-            this.$emit('deleteTodo', index);
-        },
-        done(index) {
-            this.$emit('doneTodo', [index, true]);
-        },
-        unDone(index) {
-            this.$emit('doneTodo', [index, false]);
-        }
+    setup(props, { emit }) {
+        const deleteTODO = index => {
+            emit("deleteTodo", index);
+        };
+
+        const done = index => {
+            emit("doneTodo", [index, true]);
+        };
+
+        const unDone = index => {
+            emit("doneTodo", [index, false]);
+        };
+
+        return { deleteTODO, done, unDone };
     }
 };
 </script>
